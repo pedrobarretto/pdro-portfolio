@@ -1,3 +1,25 @@
+# Pedro Barretto's Portfolio
+
+A clean, modern portfolio website showcasing Pedro Barretto's experience as a Full Stack Developer with expertise in TypeScript, Node.js, React.js, and AI technologies.
+
+## Features
+
+- **Clean, minimal design** with dark/light theme toggle
+- **Responsive layout** optimized for all devices
+- **Professional links** to LinkedIn, GitHub, and X (Twitter)
+- **Resume access** with direct link to Google Drive
+- **AI-900 Azure Certification** showcase
+- **Contact functionality** with email integration
+
+## Tech Stack
+
+- **Framework**: Next.js 15.4.1 with App Router
+- **Styling**: Tailwind CSS v4 with custom animations
+- **UI Components**: Radix UI primitives with custom styling
+- **Icons**: Lucide React
+- **TypeScript**: Full type safety throughout
+- **Theme**: Custom dark/light mode implementation
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
