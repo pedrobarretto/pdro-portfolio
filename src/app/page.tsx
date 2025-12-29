@@ -1,97 +1,228 @@
-import { Github, Linkedin, Download, Award, Eye, FileText } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Github, Linkedin, Mail } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { EmailButton } from '@/components/email-button';
+import Link from 'next/link';
+
+// Data types
+type Project = {
+  name: string;
+  description: string;
+  url?: string;
+};
+
+type ThoughtPost = {
+  title: string;
+  description: string;
+  slug: string;
+};
+
+type CoolLink = {
+  title: string;
+  description: string;
+  url: string;
+};
+
+// Placeholder data
+const projects: Project[] = [
+  {
+    name: 'Project One',
+    description: 'A full-stack application built with Next.js and TypeScript.',
+    url: '#',
+  },
+  {
+    name: 'Project Two',
+    description: 'An AI-powered tool for automating daily tasks.',
+    url: '#',
+  },
+  {
+    name: 'Project Three',
+    description: 'Open source CLI tool for developer productivity.',
+    url: '#',
+  },
+];
+
+const thoughts: ThoughtPost[] = [
+  {
+    title: 'Coming soon',
+    description: 'I\'ll share my thoughts on software, life, and everything in between.',
+    slug: '#',
+  },
+];
+
+const coolLinks: CoolLink[] = [
+  {
+    title: 'Anthropic',
+    description: 'The company behind Claude AI.',
+    url: 'https://anthropic.com',
+  },
+  {
+    title: 'Vercel',
+    description: 'The best platform for deploying web apps.',
+    url: 'https://vercel.com',
+  },
+];
+
+// Section Header Component
+function SectionHeader({ title, moreHref }: { title: string; moreHref?: string }) {
+  return (
+    <div className="flex items-center justify-between mb-4">
+      <h2 className="text-sm font-medium text-muted-foreground">{title}</h2>
+      {moreHref && (
+        <Link
+          href={moreHref}
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          More
+        </Link>
+      )}
+    </div>
+  );
+}
+
+// Project Item Component
+function ProjectItem({ project }: { project: Project }) {
+  const content = (
+    <>
+      <h3 className="font-medium text-foreground">{project.name}</h3>
+      <p className="text-sm text-muted-foreground mt-1">{project.description}</p>
+    </>
+  );
+
+  if (project.url) {
+    return (
+      <a
+        href={project.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block hover:opacity-70 transition-opacity"
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return <div>{content}</div>;
+}
+
+// Thought Item Component
+function ThoughtItem({ thought }: { thought: ThoughtPost }) {
+  return (
+    <Link
+      href={`/thoughts/${thought.slug}`}
+      className="block hover:opacity-70 transition-opacity"
+    >
+      <h3 className="font-medium text-foreground">{thought.title}</h3>
+      <p className="text-sm text-muted-foreground mt-1">{thought.description}</p>
+    </Link>
+  );
+}
+
+// Cool Link Item Component
+function CoolLinkItem({ link }: { link: CoolLink }) {
+  return (
+    <a
+      href={link.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block hover:opacity-70 transition-opacity"
+    >
+      <h3 className="font-medium text-foreground">{link.title}</h3>
+      <p className="text-sm text-muted-foreground mt-1">{link.description}</p>
+    </a>
+  );
+}
+
+// X (Twitter) Icon Component
+function XIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
-      <div className="fixed top-4 right-4 z-50">
-        <ThemeToggle />
-      </div>
+      <main className="max-w-xl mx-auto px-6 py-16 sm:py-24">
+        {/* Header */}
+        <header className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-foreground">Pedro Barretto</h1>
+          <ThemeToggle />
+        </header>
 
-      <div className="container mx-auto px-4 py-24">
-        <div className="max-w-lg mx-auto text-center space-y-12">
+        {/* Bio */}
+        <p className="text-muted-foreground mb-16">
+          Brazilian SWE working for 🇺🇸 who loves to code and build cool stuff.
+        </p>
+
+        {/* Projects Section */}
+        <section className="mb-16">
+          <SectionHeader title="Projects" moreHref="/projects" />
           <div className="space-y-6">
-            <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-left">
-              Pedro Barretto
-            </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed text-left">
-              Computer Science graduate with 5 years of Full Stack development
-              experience. Specialized in TypeScript, Node.js, and React.js, with
-              recent focus on AI. Seeking opportunities with international
-              companies.
-            </p>
+            {projects.map((project) => (
+              <ProjectItem key={project.name} project={project} />
+            ))}
           </div>
+        </section>
 
+        {/* Thoughts Section */}
+        <section className="mb-16">
+          <SectionHeader title="Thoughts" moreHref="/thoughts" />
           <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-3">
-              <Button variant="outline" size="lg" className="w-full" asChild>
-                <a
-                  href="https://linkedin.com/in/pedrobarretto"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Linkedin className="mr-2 h-5 w-5" />
-                  LinkedIn
-                </a>
-              </Button>
-
-              <Button variant="outline" size="lg" className="w-full" asChild>
-                <a
-                  href="https://github.com/pedrobarretto"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Github className="mr-2 h-5 w-5" />
-                  GitHub
-                </a>
-              </Button>
-
-              <Button variant="outline" size="lg" className="w-full" asChild>
-                <a
-                  href="https://twitter.com/pedrobarretto_"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <svg viewBox="0 0 24 24" width="20" height="20" className="mr-2">
-                    <g>
-                      <path className="fill-zinc-950 dark:fill-zinc-200" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
-                    </g>
-                  </svg>
-                  X (formerly Twitter)
-                </a>
-              </Button>
-
-              <EmailButton email="pedro@barretto.com.br" variant="outline" />
-            </div>
-
-            <div className="space-y-3">
-              <Button size="lg" className="w-full" asChild>
-                <a href="https://drive.google.com/file/d/1owQff3WJtIxfCPu4TJKbymwGngXCC882/view?usp=sharing" target="_blank" rel="noopener noreferrer">
-                  <FileText className="mr-3 h-5 w-5" />
-                  Check my Resume
-                </a>
-              </Button>
-            </div>
-
-            <div className="space-y-3 text-left">
-              <h3 className="text-sm font-medium text-muted-foreground">Important Links</h3>
-              <div className="space-y-2">
-                <a
-                  href="https://learn.microsoft.com/api/credentials/share/en-us/pedrobarretto/2952F24E138CD2EC?sharingId=63C63473E1AC336B"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center text-sm text-foreground hover:text-primary transition-colors"
-                >
-                  <Award className="mr-2 h-4 w-4" />
-                  AI-900 Azure Certification
-                </a>
-              </div>
-            </div>
+            {thoughts.map((thought) => (
+              <ThoughtItem key={thought.slug} thought={thought} />
+            ))}
           </div>
-        </div>
-      </div>
+        </section>
+
+        {/* Cool Links Section */}
+        <section className="mb-16">
+          <SectionHeader title="Cool Links" moreHref="/links" />
+          <div className="space-y-6">
+            {coolLinks.map((link) => (
+              <CoolLinkItem key={link.url} link={link} />
+            ))}
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="flex items-center gap-6 pt-8 border-t border-border">
+          <a
+            href="https://linkedin.com/in/pedrobarretto"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="LinkedIn"
+          >
+            <Linkedin className="h-5 w-5" />
+          </a>
+          <a
+            href="https://github.com/pedrobarretto"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="GitHub"
+          >
+            <Github className="h-5 w-5" />
+          </a>
+          <a
+            href="https://twitter.com/pedrobarretto_"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="X (Twitter)"
+          >
+            <XIcon className="h-5 w-5" />
+          </a>
+          <a
+            href="mailto:pedro@barretto.com.br"
+            className="text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Email"
+          >
+            <Mail className="h-5 w-5" />
+          </a>
+        </footer>
+      </main>
     </div>
   );
 }
