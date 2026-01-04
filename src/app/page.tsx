@@ -1,4 +1,3 @@
-import { Github, Linkedin, Mail } from "lucide-react";
 import { ClockTheme } from "@/components/clock-theme";
 import Link from "next/link";
 
@@ -29,6 +28,11 @@ const projects: Project[] = [
 			"Create your daily prayer image and share with the ones you love.",
 		url: "https://suaoracaodiaria.com.br",
 	},
+	{
+		name: "Pace",
+		description: "Build your habits calmly, at your own pace.",
+		url: "https://pedrobarretto.com/pace",
+	},
 ];
 
 const thoughts: ThoughtPost[] = [
@@ -42,14 +46,9 @@ const thoughts: ThoughtPost[] = [
 
 const coolLinks: CoolLink[] = [
 	{
-		title: "Anthropic",
-		description: "The company behind Claude AI.",
-		url: "https://anthropic.com",
-	},
-	{
-		title: "Vercel",
-		description: "The best platform for deploying web apps.",
-		url: "https://vercel.com",
+		title: "It Only Takes Two Weeks",
+		description: "This video will change your life. It has changed mine.",
+		url: "https://www.youtube.com/watch?v=sZ60bY2pJfo",
 	},
 ];
 
@@ -133,15 +132,6 @@ function CoolLinkItem({ link }: { link: CoolLink }) {
 	);
 }
 
-// X (Twitter) Icon Component
-function XIcon({ className }: { className?: string }) {
-	return (
-		<svg viewBox="0 0 24 24" className={className} fill="currentColor">
-			<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-		</svg>
-	);
-}
-
 export default function Home() {
 	return (
 		<div className="min-h-screen bg-background">
@@ -196,14 +186,13 @@ export default function Home() {
 						className="text-muted-foreground hover:text-foreground transition-colors"
 						aria-label="X (Twitter)"
 					>
-						{/* <XIcon className="h-5 w-5" /> */}X
+						X
 					</a>
 					<a
 						href="mailto:pedro@barretto.com.br"
 						className="text-muted-foreground hover:text-foreground transition-colors"
 						aria-label="Email"
 					>
-						{/* <Mail className="h-5 w-5" /> */}
 						Email
 					</a>
 					<a
@@ -213,7 +202,6 @@ export default function Home() {
 						className="text-muted-foreground hover:text-foreground transition-colors"
 						aria-label="GitHub"
 					>
-						{/* <Github className="h-5 w-5" /> */}
 						GitHub
 					</a>
 					<a
@@ -223,7 +211,6 @@ export default function Home() {
 						className="text-muted-foreground hover:text-foreground transition-colors"
 						aria-label="LinkedIn"
 					>
-						{/* <Linkedin className="h-5 w-5" /> */}
 						LinkedIn
 					</a>
 				</footer>
