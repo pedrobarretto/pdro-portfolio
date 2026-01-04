@@ -1,39 +1,53 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 
 type Theme = "dark" | "light";
 
 type ThemeContextType = {
   theme: Theme;
   setTheme: (theme: Theme) => void;
+  isManualOverride: boolean;
+  setManualOverride: (override: boolean) => void;
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
+// Get theme based on current hour
+function getThemeForTime(): Theme {
+  const hour = new Date().getHours();
+  // 7 AM (7) to 4:59 PM (16) = light
+  // 5 PM (17) to 6:59 AM (6) = dark
+  return hour >= 7 && hour < 17 ? "light" : "dark";
+}
 
-  useEffect(() => {
-    const stored = localStorage.getItem("theme") as Theme;
-    if (stored && (stored === "dark" || stored === "light")) {
-      setTheme(stored);
-    } else {
-      // Default to system preference
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-      setTheme(systemTheme);
-    }
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [theme, setThemeState] = useState<Theme>("light");
+  const [isManualOverride, setManualOverride] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Set theme and apply to DOM
+  const setTheme = useCallback((newTheme: Theme) => {
+    setThemeState(newTheme);
   }, []);
 
+  // Initial mount - set theme based on time
   useEffect(() => {
+    const timeBasedTheme = getThemeForTime();
+    setThemeState(timeBasedTheme);
+    setMounted(true);
+  }, []);
+
+  // Apply theme to DOM whenever it changes
+  useEffect(() => {
+    if (!mounted) return;
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
     root.classList.add(theme);
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+  }, [theme, mounted]);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, isManualOverride, setManualOverride }}>
       {children}
     </ThemeContext.Provider>
   );
@@ -46,3 +60,5 @@ export function useTheme() {
   }
   return context;
 }
+
+export { getThemeForTime };
