@@ -50,6 +50,11 @@ const coolLinks: CoolLink[] = [
 		description: "This video will change your life. It has changed mine.",
 		url: "https://www.youtube.com/watch?v=sZ60bY2pJfo",
 	},
+	{
+		title: "Stripe Press",
+		description: "Books I wanna read",
+		url: "https://press.stripe.com/",
+	},
 ];
 
 // Section Header Component
