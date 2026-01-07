@@ -51,6 +51,11 @@ const coolLinks: CoolLink[] = [
 		url: "https://www.youtube.com/watch?v=sZ60bY2pJfo",
 	},
 	{
+		title: "AI Playing Chess",
+		description: "A chess match between LLMs.",
+		url: "https://v0-chess-match.vercel.app/",
+	},
+	{
 		title: "Stripe Press",
 		description: "Books I wanna read",
 		url: "https://press.stripe.com/",
