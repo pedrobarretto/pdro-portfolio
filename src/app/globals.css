@@ -44,6 +44,11 @@
 
 :root {
   --radius: 0.625rem;
+  --theme-wave-light: #f5f5f5;
+  --theme-wave-dark: #171717;
+  --theme-wave-x: 50vw;
+  --theme-wave-y: 0px;
+  --theme-wave-duration: 1100ms;
   --background: #f5f5f5;
   --foreground: #171717;
   --card: #f5f5f5;
@@ -117,5 +122,112 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  html {
+    view-transition-name: root;
+  }
+}
+
+@layer utilities {
+  .link-underline {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .link-underline::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.2em;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .link-underline::after {
+    content: "→";
+    margin-left: 0.35rem;
+    font-size: 0.9em;
+    opacity: 0;
+    transform: translateX(-0.35rem);
+    transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 320ms ease;
+  }
+
+  .link-underline:hover::before,
+  .link-underline:focus-visible::before,
+  .group:hover .link-underline::before,
+  .group:focus-visible .link-underline::before {
+    transform: scaleX(1);
+  }
+
+  .link-underline:hover::after,
+  .link-underline:focus-visible::after,
+  .group:hover .link-underline::after,
+  .group:focus-visible .link-underline::after {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  body.theme-wave::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    background: var(--theme-wave-color, var(--background));
+    clip-path: circle(0 at var(--theme-wave-x) var(--theme-wave-y));
+    animation: theme-wave-fallback var(--theme-wave-duration) cubic-bezier(0.22, 1, 0.36, 1)
+      forwards;
+  }
+}
+
+@supports (view-transition-name: root) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: var(--theme-wave-duration);
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  ::view-transition-new(root) {
+    clip-path: circle(0 at var(--theme-wave-x) var(--theme-wave-y));
+    animation-name: theme-wave-reveal;
+  }
+
+  ::view-transition-old(root) {
+    animation-name: theme-wave-fade;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link-underline::before,
+  .link-underline::after {
+    transition: none;
+  }
+
+  body.theme-wave::before {
+    animation: none;
+  }
+}
+
+@keyframes theme-wave-reveal {
+  to {
+    clip-path: circle(150% at var(--theme-wave-x) var(--theme-wave-y));
+  }
+}
+
+@keyframes theme-wave-fallback {
+  to {
+    clip-path: circle(150% at var(--theme-wave-x) var(--theme-wave-y));
+  }
+}
+
+@keyframes theme-wave-fade {
+  to {
+    opacity: 0;
   }
 }

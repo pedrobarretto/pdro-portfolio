@@ -76,7 +76,7 @@ function SectionHeader({
 			{moreHref && (
 				<Link
 					href={moreHref}
-					className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+					className="text-sm text-muted-foreground hover:text-foreground transition-colors link-underline"
 				>
 					More
 				</Link>
@@ -87,29 +87,32 @@ function SectionHeader({
 
 // Project Item Component
 function ProjectItem({ project }: { project: Project }) {
-	const content = (
-		<>
-			<h3 className="font-medium text-foreground">{project.name}</h3>
-			<p className="text-sm text-muted-foreground mt-1">
-				{project.description}
-			</p>
-		</>
-	);
-
 	if (project.url) {
 		return (
 			<a
 				href={project.url}
 				target="_blank"
 				rel="noopener noreferrer"
-				className="block hover:opacity-70 transition-opacity"
+				className="group block hover:opacity-70 transition-opacity"
 			>
-				{content}
+				<h3 className="font-medium text-foreground">
+					<span className="link-underline">{project.name}</span>
+				</h3>
+				<p className="text-sm text-muted-foreground mt-1">
+					{project.description}
+				</p>
 			</a>
 		);
 	}
 
-	return <div>{content}</div>;
+	return (
+		<div>
+			<h3 className="font-medium text-foreground">{project.name}</h3>
+			<p className="text-sm text-muted-foreground mt-1">
+				{project.description}
+			</p>
+		</div>
+	);
 }
 
 // Thought Item Component
@@ -117,9 +120,11 @@ function ThoughtItem({ thought }: { thought: ThoughtPost }) {
 	return (
 		<Link
 			href={`/thoughts/${thought.slug}`}
-			className="block hover:opacity-70 transition-opacity"
+			className="group block hover:opacity-70 transition-opacity"
 		>
-			<h3 className="font-medium text-foreground">{thought.title}</h3>
+			<h3 className="font-medium text-foreground">
+				<span className="link-underline">{thought.title}</span>
+			</h3>
 			<p className="text-sm text-muted-foreground mt-1">
 				{thought.description}
 			</p>
@@ -134,9 +139,11 @@ function CoolLinkItem({ link }: { link: CoolLink }) {
 			href={link.url}
 			target="_blank"
 			rel="noopener noreferrer"
-			className="block hover:opacity-70 transition-opacity"
+			className="group block hover:opacity-70 transition-opacity"
 		>
-			<h3 className="font-medium text-foreground">{link.title}</h3>
+			<h3 className="font-medium text-foreground">
+				<span className="link-underline">{link.title}</span>
+			</h3>
 			<p className="text-sm text-muted-foreground mt-1">{link.description}</p>
 		</a>
 	);
@@ -193,14 +200,14 @@ export default function Home() {
 						href="https://twitter.com/pedrobarretto_"
 						target="_blank"
 						rel="noopener noreferrer"
-						className="text-muted-foreground hover:text-foreground transition-colors"
+						className="text-muted-foreground hover:text-foreground transition-colors link-underline"
 						aria-label="X (Twitter)"
 					>
 						X
 					</a>
 					<a
 						href="mailto:pedro@barretto.com.br"
-						className="text-muted-foreground hover:text-foreground transition-colors"
+						className="text-muted-foreground hover:text-foreground transition-colors link-underline"
 						aria-label="Email"
 					>
 						Email
@@ -209,7 +216,7 @@ export default function Home() {
 						href="https://github.com/pedrobarretto"
 						target="_blank"
 						rel="noopener noreferrer"
-						className="text-muted-foreground hover:text-foreground transition-colors"
+						className="text-muted-foreground hover:text-foreground transition-colors link-underline"
 						aria-label="GitHub"
 					>
 						GitHub
@@ -218,7 +225,7 @@ export default function Home() {
 						href="https://linkedin.com/in/pedrobarretto"
 						target="_blank"
 						rel="noopener noreferrer"
-						className="text-muted-foreground hover:text-foreground transition-colors"
+						className="text-muted-foreground hover:text-foreground transition-colors link-underline"
 						aria-label="LinkedIn"
 					>
 						LinkedIn

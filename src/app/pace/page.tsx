@@ -16,19 +16,19 @@ export default function PacePage() {
 				<nav className="mt-8 flex flex-col gap-4">
 					<Link
 						href="/pace/support"
-						className="text-muted-foreground hover:text-foreground transition-colors"
+						className="text-muted-foreground hover:text-foreground transition-colors link-underline"
 					>
 						Support
 					</Link>
 					<Link
 						href="/pace/terms"
-						className="text-muted-foreground hover:text-foreground transition-colors"
+						className="text-muted-foreground hover:text-foreground transition-colors link-underline"
 					>
 						Terms of Service
 					</Link>
 					<Link
 						href="/pace/privacy"
-						className="text-muted-foreground hover:text-foreground transition-colors"
+						className="text-muted-foreground hover:text-foreground transition-colors link-underline"
 					>
 						Privacy Policy
 					</Link>

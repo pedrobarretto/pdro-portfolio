@@ -17,6 +17,8 @@ export function ClockTheme() {
   const [time, setTime] = useState<string>("");
   const [mounted, setMounted] = useState(false);
   const lastHourRef = useRef<number | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const waveTimeoutRef = useRef<number | null>(null);
 
   // Initialize and update clock every second
   useEffect(() => {
@@ -59,7 +61,40 @@ export function ClockTheme() {
   const handleClick = () => {
     const newTheme = theme === "dark" ? "light" : "dark";
     setManualOverride(true);
-    setTheme(newTheme);
+    const root = document.documentElement;
+    const buttonRect = buttonRef.current?.getBoundingClientRect();
+    const waveX = buttonRect ? buttonRect.left + buttonRect.width / 2 : window.innerWidth - 24;
+    const waveY = buttonRect ? buttonRect.top + buttonRect.height / 2 : 24;
+
+    root.style.setProperty("--theme-wave-x", `${waveX}px`);
+    root.style.setProperty("--theme-wave-y", `${waveY}px`);
+    root.style.setProperty(
+      "--theme-wave-color",
+      newTheme === "dark" ? "var(--theme-wave-dark)" : "var(--theme-wave-light)",
+    );
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const startViewTransition = (
+      document as Document & {
+        startViewTransition?: (callback: () => void) => void;
+      }
+    ).startViewTransition?.bind(document);
+
+    if (prefersReducedMotion || !startViewTransition) {
+      document.body.classList.add("theme-wave");
+      if (waveTimeoutRef.current) {
+        window.clearTimeout(waveTimeoutRef.current);
+      }
+      setTheme(newTheme);
+      waveTimeoutRef.current = window.setTimeout(() => {
+        document.body.classList.remove("theme-wave");
+      }, 1100);
+      return;
+    }
+
+    startViewTransition(() => {
+      setTheme(newTheme);
+    });
   };
 
   // Avoid hydration mismatch
@@ -76,6 +111,7 @@ export function ClockTheme() {
 
   return (
     <button
+      ref={buttonRef}
       onClick={handleClick}
       className="text-sm font-mono text-muted-foreground hover:text-foreground transition-colors tabular-nums cursor-pointer"
       aria-label={`Current time: ${time}. Click to switch to ${theme === "dark" ? "light" : "dark"} mode`}
