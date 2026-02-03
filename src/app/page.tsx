@@ -1,5 +1,8 @@
+"use client";
+
 import { ClockTheme } from "@/components/clock-theme";
 import Link from "next/link";
+import { useId, useState, type ReactNode } from "react";
 
 // Data types
 type Project = {
@@ -19,6 +22,8 @@ type CoolLink = {
 	description: string;
 	url: string;
 };
+
+const DEFAULT_VISIBLE_COUNT = 3;
 
 // Placeholder data
 const projects: Project[] = [
@@ -65,21 +70,30 @@ const coolLinks: CoolLink[] = [
 // Section Header Component
 function SectionHeader({
 	title,
-	moreHref,
+	showMore = false,
+	isExpanded = false,
+	onToggle,
+	controlsId,
 }: {
 	title: string;
-	moreHref?: string;
+	showMore?: boolean;
+	isExpanded?: boolean;
+	onToggle?: () => void;
+	controlsId?: string;
 }) {
 	return (
 		<div className="flex items-center justify-between mb-4">
 			<h2 className="text-sm font-medium text-muted-foreground">{title}</h2>
-			{moreHref && (
-				<Link
-					href={moreHref}
-					className="text-sm text-muted-foreground hover:text-foreground transition-colors link-underline"
+			{showMore && onToggle && (
+				<button
+					type="button"
+					onClick={onToggle}
+					aria-expanded={isExpanded}
+					aria-controls={controlsId}
+					className="text-sm text-muted-foreground hover:text-foreground transition-colors link-underline cursor-pointer"
 				>
-					More
-				</Link>
+					{isExpanded ? "Less" : "More"}
+				</button>
 			)}
 		</div>
 	);
@@ -149,6 +163,70 @@ function CoolLinkItem({ link }: { link: CoolLink }) {
 	);
 }
 
+type ExpandableSectionProps<T> = {
+	title: string;
+	items: T[];
+	itemKey: (item: T) => string;
+	renderItem: (item: T) => ReactNode;
+};
+
+function ExpandableSection<T>({
+	title,
+	items,
+	itemKey,
+	renderItem,
+}: ExpandableSectionProps<T>) {
+	const [isExpanded, setIsExpanded] = useState(false);
+	const contentId = useId();
+	const hasMore = items.length > DEFAULT_VISIBLE_COUNT;
+	const visibleItems = items.slice(0, DEFAULT_VISIBLE_COUNT);
+	const extraItems = items.slice(DEFAULT_VISIBLE_COUNT);
+
+	return (
+		<section className="mb-16">
+			<SectionHeader
+				title={title}
+				showMore={hasMore}
+				isExpanded={isExpanded}
+				onToggle={() => setIsExpanded((prev) => !prev)}
+				controlsId={contentId}
+			/>
+			<div className="space-y-6">
+				{visibleItems.map((item) => (
+					<div key={itemKey(item)}>{renderItem(item)}</div>
+				))}
+			</div>
+			{hasMore && (
+				<div
+					id={contentId}
+					aria-hidden={!isExpanded}
+					className={[
+						"overflow-hidden transition-[max-height,opacity,margin] duration-500",
+						"ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+						isExpanded
+							? "max-h-[2000px] opacity-100 mt-6"
+							: "max-h-0 opacity-0 mt-0 pointer-events-none",
+					].join(" ")}
+				>
+					<div
+						className={[
+							"space-y-6 transition-[opacity,filter,transform] duration-500",
+							"ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+							isExpanded
+								? "opacity-100 blur-0 translate-y-0"
+								: "opacity-0 blur-[3px] translate-y-2",
+						].join(" ")}
+					>
+						{extraItems.map((item) => (
+							<div key={itemKey(item)}>{renderItem(item)}</div>
+						))}
+					</div>
+				</div>
+			)}
+		</section>
+	);
+}
+
 export default function Home() {
 	return (
 		<div className="min-h-screen bg-background">
@@ -165,34 +243,28 @@ export default function Home() {
 				</p>
 
 				{/* Projects Section */}
-				<section className="mb-16">
-					<SectionHeader title="Projects" />
-					<div className="space-y-6">
-						{projects.map((project) => (
-							<ProjectItem key={project.name} project={project} />
-						))}
-					</div>
-				</section>
+				<ExpandableSection
+					title="Projects"
+					items={projects}
+					itemKey={(project) => project.name}
+					renderItem={(project) => <ProjectItem project={project} />}
+				/>
 
 				{/* Thoughts Section */}
-				<section className="mb-16">
-					<SectionHeader title="Thoughts" />
-					<div className="space-y-6">
-						{thoughts.map((thought) => (
-							<ThoughtItem key={thought.slug} thought={thought} />
-						))}
-					</div>
-				</section>
+				<ExpandableSection
+					title="Thoughts"
+					items={thoughts}
+					itemKey={(thought) => thought.slug}
+					renderItem={(thought) => <ThoughtItem thought={thought} />}
+				/>
 
 				{/* Cool Links Section */}
-				<section className="mb-16">
-					<SectionHeader title="Cool Links" />
-					<div className="space-y-6">
-						{coolLinks.map((link) => (
-							<CoolLinkItem key={link.url} link={link} />
-						))}
-					</div>
-				</section>
+				<ExpandableSection
+					title="Cool Links"
+					items={coolLinks}
+					itemKey={(link) => link.url}
+					renderItem={(link) => <CoolLinkItem link={link} />}
+				/>
 
 				{/* Footer */}
 				<footer className="flex items-center gap-6 pt-8">
