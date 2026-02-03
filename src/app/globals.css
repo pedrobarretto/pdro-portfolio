@@ -128,6 +128,72 @@
   }
 }
 
+@layer components {
+  .markdown {
+    @apply text-sm sm:text-base leading-7 text-foreground;
+  }
+
+  .markdown > * + * {
+    @apply mt-5;
+  }
+
+  .markdown h1 {
+    @apply text-3xl font-semibold tracking-tight mt-12;
+  }
+
+  .markdown h2 {
+    @apply text-2xl font-semibold tracking-tight mt-10;
+  }
+
+  .markdown h3 {
+    @apply text-xl font-semibold tracking-tight mt-8;
+  }
+
+  .markdown h4 {
+    @apply text-lg font-semibold tracking-tight mt-6;
+  }
+
+  .markdown p {
+    @apply text-muted-foreground;
+  }
+
+  .markdown a {
+    @apply text-foreground underline decoration-muted-foreground/60 underline-offset-4 hover:decoration-foreground;
+  }
+
+  .markdown ul {
+    @apply list-disc pl-6 text-muted-foreground;
+  }
+
+  .markdown ol {
+    @apply list-decimal pl-6 text-muted-foreground;
+  }
+
+  .markdown blockquote {
+    @apply border-l-2 border-muted pl-4 italic text-muted-foreground;
+  }
+
+  .markdown code {
+    @apply font-mono text-[0.9em] bg-muted px-1 py-0.5 rounded;
+  }
+
+  .markdown pre {
+    @apply bg-secondary text-foreground rounded-lg p-4 overflow-x-auto;
+  }
+
+  .markdown pre code {
+    @apply bg-transparent p-0;
+  }
+
+  .markdown hr {
+    @apply border-muted my-8;
+  }
+
+  .markdown img {
+    @apply rounded-lg border border-border max-w-full;
+  }
+}
+
 @layer utilities {
   .link-underline {
     position: relative;
