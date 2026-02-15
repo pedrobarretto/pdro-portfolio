@@ -38,7 +38,7 @@ const projects: Project[] = [
   {
     name: "Pace",
     description: "Build your habits calmly, at your own pace.",
-    url: "https://pedrobarretto.com/pace",
+    url: "https://apps.apple.com/br/app/pace-build-habits-calmly/id6757363838",
   },
 ];
 
