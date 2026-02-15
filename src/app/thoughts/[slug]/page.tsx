@@ -16,9 +16,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const thought = getThoughtBySlug(params.slug);
+  const { slug } = await params;
+  const thought = getThoughtBySlug(slug);
 
   if (!thought) {
     return {
@@ -32,12 +33,13 @@ export async function generateMetadata({
   };
 }
 
-export default function ThoughtPage({
+export default async function ThoughtPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const thought = getThoughtBySlug(params.slug);
+  const { slug } = await params;
+  const thought = getThoughtBySlug(slug);
 
   if (!thought) {
     notFound();

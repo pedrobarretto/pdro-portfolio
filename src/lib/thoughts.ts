@@ -1,6 +1,5 @@
 import fs from "node:fs";
 import path from "node:path";
-import { markdownToHtml } from "@/lib/markdown";
 
 const THOUGHTS_DIR = path.join(process.cwd(), "content", "thoughts");
 const WORDS_PER_MINUTE = 200;
@@ -18,14 +17,13 @@ export type Thought = {
 
 export type ThoughtWithContent = Thought & {
   content: string;
-  html: string;
 };
 
 type FrontMatter = {
   title?: string;
   description?: string;
   date?: string;
-  tags?: string[];
+  tags?: string[] | string;
   draft?: boolean;
 };
 
@@ -66,11 +64,14 @@ function parseFrontMatter(raw: string): { data: FrontMatter; content: string } {
     const key = keyMatch[1];
     const rawValue = keyMatch[2].trim();
 
+    const cleanValue = (value: string) =>
+      value.trim().replace(/^"(.*)"$/, "$1").replace(/^'(.*)'$/, "$1");
+
     if (rawValue === "" && i + 1 < lines.length) {
       const listItems: string[] = [];
       let j = i + 1;
       while (j < lines.length && lines[j].trim().startsWith("- ")) {
-        listItems.push(lines[j].trim().slice(2));
+        listItems.push(cleanValue(lines[j].trim().slice(2)));
         j += 1;
       }
       if (listItems.length > 0) {
@@ -84,7 +85,7 @@ function parseFrontMatter(raw: string): { data: FrontMatter; content: string } {
       const items = rawValue
         .slice(1, -1)
         .split(",")
-        .map((item) => item.trim())
+        .map((item) => cleanValue(item))
         .filter(Boolean);
       data[key as keyof FrontMatter] = items as never;
       continue;
@@ -95,8 +96,7 @@ function parseFrontMatter(raw: string): { data: FrontMatter; content: string } {
       continue;
     }
 
-    const unquoted = rawValue.replace(/^"(.*)"$/, "$1").replace(/^'(.*)'$/, "$1");
-    data[key as keyof FrontMatter] = unquoted as never;
+    data[key as keyof FrontMatter] = cleanValue(rawValue) as never;
   }
 
   return { data, content };
@@ -123,9 +123,10 @@ function formatSlug(fileName: string) {
   return fileName.replace(/\.md$/, "");
 }
 
-function normalizeTags(tags?: string[]) {
+function normalizeTags(tags?: string[] | string) {
   if (!tags) return [];
-  return tags.map((tag) => tag.trim()).filter(Boolean);
+  const list = Array.isArray(tags) ? tags : tags.split(",");
+  return list.map((tag) => tag.trim()).filter(Boolean);
 }
 
 function isPublished(thought: Thought) {
@@ -133,14 +134,41 @@ function isPublished(thought: Thought) {
   return process.env.NODE_ENV !== "production";
 }
 
+function parseDateInput(date: string) {
+  const match = date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (match) {
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const day = Number(match[3]);
+    const value = new Date(Date.UTC(year, month - 1, day));
+    return { value, isDateOnly: true };
+  }
+
+  const value = new Date(date);
+  if (Number.isNaN(value.getTime())) {
+    return { value: null, isDateOnly: false };
+  }
+
+  return { value, isDateOnly: false };
+}
+
+function getDateValue(date: string) {
+  const { value } = parseDateInput(date);
+  return value ? value.getTime() : 0;
+}
+
 export function formatThoughtDate(date: string) {
-  const parsed = new Date(date);
-  if (Number.isNaN(parsed.getTime())) return date;
-  return new Intl.DateTimeFormat("en-US", {
+  const { value, isDateOnly } = parseDateInput(date);
+  if (!value) return date;
+  const options: Intl.DateTimeFormatOptions = {
     month: "long",
     day: "numeric",
     year: "numeric",
-  }).format(parsed);
+  };
+  if (isDateOnly) {
+    options.timeZone = "UTC";
+  }
+  return new Intl.DateTimeFormat("en-US", options).format(value);
 }
 
 export function getThoughtBySlug(slug: string): ThoughtWithContent | null {
@@ -170,12 +198,9 @@ export function getThoughtBySlug(slug: string): ThoughtWithContent | null {
     draft: Boolean(data.draft),
   };
 
-  const html = markdownToHtml(content);
-
   return {
     ...thought,
     content,
-    html,
   };
 }
 
@@ -189,13 +214,13 @@ export function getAllThoughts(): Thought[] {
     })
     .filter((thought): thought is ThoughtWithContent => Boolean(thought))
     .map((thought) => {
-      const { html: _html, content: _content, ...rest } = thought;
+      const { content: _content, ...rest } = thought;
       return rest;
     })
     .filter(isPublished)
     .sort((a, b) => {
-      const aTime = new Date(a.date).getTime();
-      const bTime = new Date(b.date).getTime();
+      const aTime = getDateValue(a.date);
+      const bTime = getDateValue(b.date);
       return bTime - aTime;
     });
 

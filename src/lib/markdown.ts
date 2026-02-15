@@ -8,19 +8,39 @@ function escapeHtml(input: string) {
 }
 
 function renderInline(text: string) {
-  let output = escapeHtml(text);
+  const codeTokens: string[] = [];
+  const imageTokens: string[] = [];
+  const linkTokens: string[] = [];
 
-  output = output.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_match, alt, url) => {
-    return `<img src="${url}" alt="${alt}" />`;
+  const withCodeTokens = text.replace(/`([^`]+)`/g, (_match, code) => {
+    const token = `@@CODE${codeTokens.length}@@`;
+    codeTokens.push(`<code>${escapeHtml(code)}</code>`);
+    return token;
   });
 
-  output = output.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, label, url) => {
-    return `<a href="${url}">${label}</a>`;
-  });
+  const withImageTokens = withCodeTokens.replace(
+    /!\[([^\]]*)\]\(([^)]+)\)/g,
+    (_match, alt, url) => {
+      const token = `@@IMG${imageTokens.length}@@`;
+      imageTokens.push(
+        `<img src="${escapeHtml(url)}" alt="${escapeHtml(alt)}" />`,
+      );
+      return token;
+    },
+  );
 
-  output = output.replace(/`([^`]+)`/g, (_match, code) => {
-    return `<code>${code}</code>`;
-  });
+  const withLinkTokens = withImageTokens.replace(
+    /\[([^\]]+)\]\(([^)]+)\)/g,
+    (_match, label, url) => {
+      const token = `@@LINK${linkTokens.length}@@`;
+      linkTokens.push(
+        `<a href="${escapeHtml(url)}">${escapeHtml(label)}</a>`,
+      );
+      return token;
+    },
+  );
+
+  let output = escapeHtml(withLinkTokens);
 
   output = output.replace(/\*\*([\s\S]+?)\*\*/g, (_match, bold) => {
     return `<strong>${bold}</strong>`;
@@ -32,6 +52,21 @@ function renderInline(text: string) {
 
   output = output.replace(/_([\s\S]+?)_/g, (_match, italic) => {
     return `<em>${italic}</em>`;
+  });
+
+  output = output.replace(/@@CODE(\d+)@@/g, (_match, index) => {
+    const tokenIndex = Number(index);
+    return codeTokens[tokenIndex] ?? "";
+  });
+
+  output = output.replace(/@@IMG(\d+)@@/g, (_match, index) => {
+    const tokenIndex = Number(index);
+    return imageTokens[tokenIndex] ?? "";
+  });
+
+  output = output.replace(/@@LINK(\d+)@@/g, (_match, index) => {
+    const tokenIndex = Number(index);
+    return linkTokens[tokenIndex] ?? "";
   });
 
   return output;
@@ -100,11 +135,11 @@ export function markdownToHtml(markdown: string) {
       continue;
     }
 
-    if (line.trim().startsWith(">")) {
+    if (/^\s*>/.test(line)) {
       flushParagraph(paragraphBuffer, html);
       flushList(listType, listItems, html);
       listType = null;
-      blockquoteBuffer.push(line.replace(/^>\s?/, ""));
+      blockquoteBuffer.push(line.replace(/^\s*>\s?/, ""));
       continue;
     }
 
