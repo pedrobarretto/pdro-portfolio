@@ -15,6 +15,14 @@ export default function PacePage() {
 				<h1 className="text-2xl font-bold text-foreground mt-6">Pace</h1>
 				<nav className="mt-8 flex flex-col gap-4">
 					<Link
+						href="https://apps.apple.com/br/app/pace-build-habits-calmly/id6757363838"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="text-muted-foreground hover:text-foreground transition-colors link-underline"
+					>
+						Try Pace on IOS
+					</Link>
+					<Link
 						href="/pace/support"
 						className="text-muted-foreground hover:text-foreground transition-colors link-underline"
 					>
