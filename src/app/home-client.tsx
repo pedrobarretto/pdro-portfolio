@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { ClockTheme } from "@/components/clock-theme";
 import Link from "next/link";
 import { useId, useState, type ReactNode } from "react";
@@ -8,6 +9,8 @@ type Project = {
   name: string;
   description: string;
   url?: string;
+  downloadUrl?: string;
+  downloadLabel?: string;
 };
 
 type ThoughtPost = {
@@ -29,6 +32,14 @@ type HomeClientProps = {
 const DEFAULT_VISIBLE_COUNT = 3;
 
 const projects: Project[] = [
+  {
+    name: "Codex Account Hub",
+    description: "Open Source codex account switcher for macos",
+    url: "https://github.com/pedrobarretto/codex-account-hub",
+    downloadUrl:
+      "https://github.com/pedrobarretto/codex-account-hub/releases/download/v0.1.5/CodexAccountHub-v0.1.5-macOS.dmg",
+    downloadLabel: "Download",
+  },
   {
     name: "SuaOraçãoDiaria.com.br",
     description:
@@ -94,19 +105,34 @@ function SectionHeader({
 function ProjectItem({ project }: { project: Project }) {
   if (project.url) {
     return (
-      <a
-        href={project.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="group block hover:opacity-70 transition-opacity"
-      >
-        <h3 className="font-medium text-foreground">
-          <span className="link-underline">{project.name}</span>
-        </h3>
-        <p className="text-sm text-muted-foreground mt-1">
-          {project.description}
-        </p>
-      </a>
+      <div className="group">
+        <a
+          href={project.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block hover:opacity-70 transition-opacity"
+        >
+          <h3 className="font-medium text-foreground">
+            <span className="link-underline">{project.name}</span>
+          </h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            {project.description}
+          </p>
+        </a>
+        {project.downloadUrl && (
+          <div className="mt-3 flex items-center gap-3">
+            <Button asChild variant="outline" size="sm" className="rounded-full">
+              <a
+                href={project.downloadUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {project.downloadLabel ?? "Download"}
+              </a>
+            </Button>
+          </div>
+        )}
+      </div>
     );
   }
 
