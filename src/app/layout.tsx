@@ -14,8 +14,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pedro Barretto - Portfolio",
-  description: "Full Stack Developer passionate about creating innovative digital solutions",
+  metadataBase: new URL("https://pedrobarretto.com.br"),
+  title: {
+    default: "Pedro Barretto",
+    template: "%s — Pedro Barretto",
+  },
+  description:
+    "Software engineer in Brazil. Building ChatDeIA, Pace, and other things for the web and iOS.",
 };
 
 export default function RootLayout({

@@ -195,6 +195,11 @@
 }
 
 @layer utilities {
+  .animate-enter {
+    animation: enter-fade-up 600ms cubic-bezier(0.23, 1, 0.32, 1) both;
+    animation-delay: calc(var(--stagger, 0) * 70ms);
+  }
+
   .link-underline {
     position: relative;
     display: inline-flex;
@@ -269,6 +274,12 @@
   }
 }
 
+/* While scrubbing time on the clock, let colors chase the theme smoothly */
+.theme-scrubbing body,
+.theme-scrubbing body * {
+  transition: background-color 250ms ease, color 250ms ease, border-color 250ms ease;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .link-underline::before,
   .link-underline::after {
@@ -277,6 +288,24 @@
 
   body.theme-wave::before {
     animation: none;
+  }
+
+  .animate-enter {
+    animation-name: enter-fade;
+    animation-delay: 0ms;
+  }
+}
+
+@keyframes enter-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes enter-fade {
+  from {
+    opacity: 0;
   }
 }
 

@@ -1,73 +1,80 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { ClockTheme } from "@/components/clock-theme";
-import Link from "next/link";
-import { useId, useState, type ReactNode } from "react";
+import Image from "next/image";
+import { useEffect, useId, useState, type CSSProperties, type ReactNode } from "react";
 
 type Project = {
   name: string;
   description: string;
   url?: string;
-  downloadUrl?: string;
-  downloadLabel?: string;
-};
-
-type ThoughtPost = {
-  title: string;
-  description: string;
-  slug?: string;
-};
-
-type CoolLink = {
-  title: string;
-  description: string;
-  url: string;
-};
-
-type HomeClientProps = {
-  thoughts: ThoughtPost[];
+  icon?: string;
+  // Reserved for future live demos (e.g. an embedded ChatDeIA chat)
+  embed?: ReactNode;
 };
 
 const DEFAULT_VISIBLE_COUNT = 3;
 
-const projects: Project[] = [
+type Social = {
+  label: string;
+  url: string;
+  icon: string;
+  // Dark marks on transparent backgrounds disappear on the dark theme
+  darkInvert?: boolean;
+};
+
+const socials: Social[] = [
   {
-    name: "Codex Account Hub",
-    description: "Open Source codex account switcher for macos",
-    url: "https://github.com/pedrobarretto/codex-account-hub",
-    downloadUrl:
-      "https://github.com/pedrobarretto/codex-account-hub/releases/download/v0.1.5/CodexAccountHub-v0.1.5-macOS.dmg",
-    downloadLabel: "Download",
+    label: "X (Twitter)",
+    url: "https://twitter.com/pedrobarretto_",
+    icon: "/icons/x.png",
   },
   {
-    name: "SuaOraçãoDiaria.com.br",
-    description:
-      "Create your daily prayer image and share with the ones you love.",
-    url: "https://suaoracaodiaria.com.br",
+    label: "Email",
+    url: "mailto:pedro@barretto.com.br",
+    icon: "/icons/gmail.png",
   },
   {
-    name: "Pace",
-    description: "Build your habits calmly, at your own pace.",
-    url: "https://apps.apple.com/br/app/pace-build-habits-calmly/id6757363838",
+    label: "GitHub",
+    url: "https://github.com/pedrobarretto",
+    icon: "/icons/github.png",
+    darkInvert: true,
+  },
+  {
+    label: "LinkedIn",
+    url: "https://linkedin.com/in/pedrobarretto",
+    icon: "/icons/linkedin.png",
   },
 ];
 
-const coolLinks: CoolLink[] = [
+const projects: Project[] = [
   {
-    title: "It Only Takes Two Weeks",
-    description: "This video will change your life. It has changed mine.",
-    url: "https://www.youtube.com/watch?v=sZ60bY2pJfo",
+    name: "ChatDeIA",
+    description:
+      "AI attendants that answer your customers on WhatsApp and your website in seconds — 24/7, in your tone of voice.",
+    url: "https://chatde.ia.br",
+    icon: "/icons/chatdeia.png",
   },
   {
-    title: "AI Playing Chess",
-    description: "A chess match between LLMs.",
-    url: "https://v0-chess-match.vercel.app/",
+    name: "Pace",
+    description:
+      "A habit tracker for iOS that doesn't guilt-trip you. Build habits calmly, at your own pace.",
+    url: "https://apps.apple.com/br/app/pace-build-habits-calmly/id6757363838",
+    icon: "/icons/pace.png",
   },
   {
-    title: "Stripe Press",
-    description: "Books I wanna read",
-    url: "https://press.stripe.com/",
+    name: "Codex Account Hub",
+    description:
+      "Open-source macOS menu bar app to switch between Codex accounts without the logout dance.",
+    url: "https://github.com/pedrobarretto/codex-account-hub",
+    icon: "/icons/codex-account-hub.png",
+  },
+  {
+    name: "SuaOraçãoDiária",
+    description:
+      "Create a daily prayer image and share it with the people you love.",
+    url: "https://suaoracaodiaria.com.br",
+    icon: "/icons/suaoracaodiaria.png",
   },
 ];
 
@@ -103,89 +110,48 @@ function SectionHeader({
 }
 
 function ProjectItem({ project }: { project: Project }) {
-  if (project.url) {
-    return (
-      <div className="group">
+  const body = (
+    <div className="flex gap-3">
+      {project.icon && (
+        <Image
+          src={project.icon}
+          alt=""
+          width={20}
+          height={20}
+          className="mt-0.5 size-5 shrink-0 rounded-[5px] grayscale opacity-80 transition-[filter,opacity] duration-300 group-hover:grayscale-0 group-hover:opacity-100"
+        />
+      )}
+      <div>
+        <h3 className="font-medium text-foreground">
+          {project.url ? (
+            <span className="link-underline">{project.name}</span>
+          ) : (
+            project.name
+          )}
+        </h3>
+        <p className="text-sm text-muted-foreground mt-1">
+          {project.description}
+        </p>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="group">
+      {project.url ? (
         <a
           href={project.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="block hover:opacity-70 transition-opacity"
+          className="block"
         >
-          <h3 className="font-medium text-foreground">
-            <span className="link-underline">{project.name}</span>
-          </h3>
-          <p className="text-sm text-muted-foreground mt-1">
-            {project.description}
-          </p>
+          {body}
         </a>
-        {project.downloadUrl && (
-          <div className="mt-3 flex items-center gap-3">
-            <Button asChild variant="outline" size="sm" className="rounded-full">
-              <a
-                href={project.downloadUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {project.downloadLabel ?? "Download"}
-              </a>
-            </Button>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <h3 className="font-medium text-foreground">{project.name}</h3>
-      <p className="text-sm text-muted-foreground mt-1">
-        {project.description}
-      </p>
+      ) : (
+        body
+      )}
+      {project.embed && <div className="mt-4">{project.embed}</div>}
     </div>
-  );
-}
-
-function ThoughtItem({ thought }: { thought: ThoughtPost }) {
-  if (!thought.slug) {
-    return (
-      <div>
-        <h3 className="font-medium text-foreground">{thought.title}</h3>
-        <p className="text-sm text-muted-foreground mt-1">
-          {thought.description}
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <Link
-      href={`/thoughts/${thought.slug}`}
-      className="group block hover:opacity-70 transition-opacity"
-    >
-      <h3 className="font-medium text-foreground">
-        <span className="link-underline">{thought.title}</span>
-      </h3>
-      <p className="text-sm text-muted-foreground mt-1">
-        {thought.description}
-      </p>
-    </Link>
-  );
-}
-
-function CoolLinkItem({ link }: { link: CoolLink }) {
-  return (
-    <a
-      href={link.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group block hover:opacity-70 transition-opacity"
-    >
-      <h3 className="font-medium text-foreground">
-        <span className="link-underline">{link.title}</span>
-      </h3>
-      <p className="text-sm text-muted-foreground mt-1">{link.description}</p>
-    </a>
   );
 }
 
@@ -194,6 +160,7 @@ type ExpandableSectionProps<T> = {
   items: T[];
   itemKey: (item: T) => string;
   renderItem: (item: T) => ReactNode;
+  visibleCount?: number;
 };
 
 function ExpandableSection<T>({
@@ -201,12 +168,13 @@ function ExpandableSection<T>({
   items,
   itemKey,
   renderItem,
+  visibleCount = DEFAULT_VISIBLE_COUNT,
 }: ExpandableSectionProps<T>) {
   const [isExpanded, setIsExpanded] = useState(false);
   const contentId = useId();
-  const hasMore = items.length > DEFAULT_VISIBLE_COUNT;
-  const visibleItems = items.slice(0, DEFAULT_VISIBLE_COUNT);
-  const extraItems = items.slice(DEFAULT_VISIBLE_COUNT);
+  const hasMore = items.length > visibleCount;
+  const visibleItems = items.slice(0, visibleCount);
+  const extraItems = items.slice(visibleCount);
 
   return (
     <section className="mb-16">
@@ -253,75 +221,135 @@ function ExpandableSection<T>({
   );
 }
 
-export default function HomeClient({ thoughts }: HomeClientProps) {
+function BrazilTime() {
+  const [now, setNow] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setNow(new Date());
+    const interval = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Reserve the line's height before mount to avoid layout shift
+  if (!now) {
+    return <p className="text-sm text-muted-foreground mb-8 h-5" aria-hidden />;
+  }
+
+  const time = new Intl.DateTimeFormat("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "America/Sao_Paulo",
+  }).format(now);
+  const hour = Number(
+    new Intl.DateTimeFormat("en-GB", {
+      hour: "numeric",
+      hourCycle: "h23",
+      timeZone: "America/Sao_Paulo",
+    }).format(now),
+  );
+  const flavor =
+    hour >= 23 || hour < 5
+      ? " — I should be asleep."
+      : hour < 7
+        ? " — the coffee is fresh."
+        : ".";
+
+  return (
+    <p className="text-sm text-muted-foreground mb-8">
+      It&apos;s {time} for me in Brazil{flavor}
+    </p>
+  );
+}
+
+function stagger(step: number): CSSProperties {
+  return { "--stagger": step } as CSSProperties;
+}
+
+export default function HomeClient() {
+  useEffect(() => {
+    console.log("%chey, fellow dev 👋", "font-size:14px;font-weight:600;");
+    console.log(
+      "Try dragging the clock in the top-right corner — you can scrub through the day.\n" +
+        "And if you still remember the Konami code… it works here. (↑ ↑ ↓ ↓ ← → ← → B A)",
+    );
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <main className="max-w-[640px] mx-auto px-6 py-16 sm:py-24">
-        <header className="flex items-center justify-between mb-6">
+        <header
+          className="flex items-center justify-between mb-6 animate-enter"
+          style={stagger(0)}
+        >
           <h1 className="text-2xl font-bold text-foreground">Pedro Barretto</h1>
           <ClockTheme />
         </header>
 
-        <p className="text-muted-foreground mb-16">
-          Brazilian SWE working for 🇺🇸 who loves to code and build cool stuff.
+        <p
+          className="text-muted-foreground mb-16 animate-enter"
+          style={stagger(1)}
+        >
+          Software engineer in Brazil, working remotely for{" "}
+          <a
+            href="https://ingenious.agency/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-foreground underline decoration-muted-foreground/60 underline-offset-4 transition-colors hover:decoration-foreground"
+          >
+            Ingenious Agency
+          </a>{" "}
+          and doing AI consulting for{" "}
+          <a
+            href="https://www.poscontrole.com.br/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-foreground underline decoration-muted-foreground/60 underline-offset-4 transition-colors hover:decoration-foreground"
+          >
+            POS Controle
+          </a>
+          . Nights and weekends, I ship my own things: AI attendants on
+          WhatsApp, a calm habit tracker, small tools that scratch my own itch.
         </p>
 
-        <ExpandableSection
-          title="Projects"
-          items={projects}
-          itemKey={(project) => project.name}
-          renderItem={(project) => <ProjectItem project={project} />}
-        />
+        <div className="animate-enter" style={stagger(2)}>
+          <ExpandableSection
+            title="Projects"
+            items={projects}
+            itemKey={(project) => project.name}
+            renderItem={(project) => <ProjectItem project={project} />}
+            visibleCount={4}
+          />
+        </div>
 
-        <ExpandableSection
-          title="Thoughts"
-          items={thoughts}
-          itemKey={(thought) => thought.slug ?? thought.title}
-          renderItem={(thought) => <ThoughtItem thought={thought} />}
-        />
-
-        <ExpandableSection
-          title="Cool Links"
-          items={coolLinks}
-          itemKey={(link) => link.url}
-          renderItem={(link) => <CoolLinkItem link={link} />}
-        />
-
-        <footer className="flex items-center gap-6 pt-8">
-          <a
-            href="https://twitter.com/pedrobarretto_"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-foreground transition-colors link-underline"
-            aria-label="X (Twitter)"
-          >
-            X
-          </a>
-          <a
-            href="mailto:pedro@barretto.com.br"
-            className="text-muted-foreground hover:text-foreground transition-colors link-underline"
-            aria-label="Email"
-          >
-            Email
-          </a>
-          <a
-            href="https://github.com/pedrobarretto"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-foreground transition-colors link-underline"
-            aria-label="GitHub"
-          >
-            GitHub
-          </a>
-          <a
-            href="https://linkedin.com/in/pedrobarretto"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-foreground transition-colors link-underline"
-            aria-label="LinkedIn"
-          >
-            LinkedIn
-          </a>
+        <footer className="pt-8 animate-enter" style={stagger(3)}>
+          <BrazilTime />
+          <div className="flex items-center gap-5">
+            {socials.map((social) => (
+              <a
+                key={social.label}
+                href={social.url}
+                {...(social.url.startsWith("http")
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
+                aria-label={social.label}
+                title={social.label}
+                className="transition-transform duration-150 active:scale-95"
+              >
+                <Image
+                  src={social.icon}
+                  alt=""
+                  width={20}
+                  height={20}
+                  className={[
+                    "size-5 rounded-[5px] grayscale opacity-70 transition-[filter,opacity] duration-300 hover:grayscale-0 hover:opacity-100",
+                    social.darkInvert ? "dark:invert" : "",
+                  ]
+                    .join(" ")
+                    .trim()}
+                />
+              </a>
+            ))}
+          </div>
         </footer>
       </main>
     </div>
