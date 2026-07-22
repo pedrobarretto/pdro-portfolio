@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/lib/theme-context";
 import "./globals.css";
@@ -36,6 +37,13 @@ export default function RootLayout({
         <ThemeProvider>
           {children}
         </ThemeProvider>
+        <Script
+          src="https://chatde.ia.br/embed.js"
+          data-chatdeia-slug="pedrobarretto"
+          data-mode="bubble"
+          data-color="#000000"
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );
