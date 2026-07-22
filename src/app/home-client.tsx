@@ -118,7 +118,7 @@ function ProjectItem({ project }: { project: Project }) {
           alt=""
           width={20}
           height={20}
-          className="mt-0.5 size-5 shrink-0 rounded-[5px] grayscale opacity-80 transition-[filter,opacity] duration-300 group-hover:grayscale-0 group-hover:opacity-100"
+          className="mt-0.5 size-5 shrink-0 rounded-[5px] sm:grayscale sm:opacity-80 transition-[filter,opacity] duration-300 sm:group-hover:grayscale-0 sm:group-hover:opacity-100"
         />
       )}
       <div>
@@ -341,7 +341,7 @@ export default function HomeClient() {
                   width={20}
                   height={20}
                   className={[
-                    "size-5 rounded-[5px] grayscale opacity-70 transition-[filter,opacity] duration-300 hover:grayscale-0 hover:opacity-100",
+                    "size-5 rounded-[5px] sm:grayscale sm:opacity-70 transition-[filter,opacity] duration-300 sm:hover:grayscale-0 sm:hover:opacity-100",
                     social.darkInvert ? "dark:invert" : "",
                   ]
                     .join(" ")
