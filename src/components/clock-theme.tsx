@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useTheme, getThemeForTime } from "@/lib/theme-context";
+import { haptic } from "@/lib/haptics";
 
 const HOUR_MS = 3_600_000;
 const PX_PER_HOUR = 14;
@@ -46,10 +47,29 @@ export function ClockTheme() {
   const offsetRef = useRef(0);
   const animRef = useRef<number | null>(null);
   const warpingRef = useRef(false);
+  const lastDetentRef = useRef(0);
+  const lastScrubThemeRef = useRef<"light" | "dark">("light");
 
   const setOffset = (value: number) => {
     offsetRef.current = value;
     setOffsetHours(value);
+  };
+
+  // Move the scrubbed time and tick like a dial: one haptic per hour detent,
+  // stronger the further from now, and a double pulse at the day/night boundary
+  const applyScrub = (offset: number) => {
+    setOffset(offset);
+    const nextTheme = themeForDate(new Date(Date.now() + offset * HOUR_MS));
+    setTheme(nextTheme);
+
+    const detent = Math.round(offset);
+    if (nextTheme !== lastScrubThemeRef.current) {
+      haptic([16, 40, 24], true);
+    } else if (detent !== lastDetentRef.current) {
+      haptic(Math.round(Math.min(32, 6 + Math.abs(offset) * 1.1)));
+    }
+    lastDetentRef.current = detent;
+    lastScrubThemeRef.current = nextTheme;
   };
 
   // Initialize and update clock every second
@@ -131,12 +151,12 @@ export function ClockTheme() {
     const step = (now: number) => {
       const t = Math.min(1, (now - start) / duration);
       const value = from * (1 - easeOut(t));
-      setOffset(value);
-      setTheme(themeForDate(new Date(Date.now() + value * HOUR_MS)));
+      applyScrub(value);
       if (t < 1) {
         animRef.current = requestAnimationFrame(step);
       } else {
         animRef.current = null;
+        haptic(14, true);
         finishScrub();
       }
     };
@@ -150,6 +170,8 @@ export function ClockTheme() {
     warpingRef.current = true;
     setManualOverride(true);
     beginScrubVisuals();
+    lastDetentRef.current = 0;
+    lastScrubThemeRef.current = theme;
 
     const duration = 4000;
     const start = performance.now();
@@ -159,8 +181,7 @@ export function ClockTheme() {
     const step = (now: number) => {
       const t = Math.min(1, (now - start) / duration);
       const value = 24 * easeInOut(t);
-      setOffset(value);
-      setTheme(themeForDate(new Date(Date.now() + value * HOUR_MS)));
+      applyScrub(value);
       if (t < 1) {
         animRef.current = requestAnimationFrame(step);
       } else {
@@ -217,10 +238,11 @@ export function ClockTheme() {
       drag.moved = true;
       setManualOverride(true);
       beginScrubVisuals();
+      lastDetentRef.current = Math.round(offsetRef.current);
+      lastScrubThemeRef.current = theme;
+      haptic(5, true);
     }
-    const offset = dx / PX_PER_HOUR;
-    setOffset(offset);
-    setTheme(themeForDate(new Date(Date.now() + offset * HOUR_MS)));
+    applyScrub(dx / PX_PER_HOUR);
   };
 
   const handlePointerUp = (event: React.PointerEvent<HTMLButtonElement>) => {
