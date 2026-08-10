@@ -63,11 +63,11 @@ const projects: Project[] = [
     icon: "/icons/pace.png",
   },
   {
-    name: "Codex Account Hub",
+    name: "Diário da Pílula",
     description:
-      "Open-source macOS menu bar app to switch between Codex accounts without the logout dance.",
-    url: "https://github.com/pedrobarretto/codex-account-hub",
-    icon: "/icons/codex-account-hub.png",
+      "Birth control tracking that never lets a day slip: 100% web, no install, and a notification right when it's time. Built for my love, Gianna.",
+    url: "https://diariodapilula.com.br",
+    icon: "/icons/diariodapilula.png",
   },
   {
     name: "SuaOraçãoDiária",
@@ -75,6 +75,13 @@ const projects: Project[] = [
       "Create a daily prayer image and share it with the people you love.",
     url: "https://suaoracaodiaria.com.br",
     icon: "/icons/suaoracaodiaria.png",
+  },
+  {
+    name: "Codex Account Hub",
+    description:
+      "Open-source macOS menu bar app to switch between Codex accounts without the logout dance.",
+    url: "https://github.com/pedrobarretto/codex-account-hub",
+    icon: "/icons/codex-account-hub.png",
   },
 ];
 
