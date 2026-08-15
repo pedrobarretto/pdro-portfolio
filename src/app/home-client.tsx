@@ -1,6 +1,7 @@
 "use client";
 
 import { ClockTheme } from "@/components/clock-theme";
+import { MusicNoteEasterEgg } from "@/components/music-note-easter-egg";
 import Image from "next/image";
 import { useEffect, useId, useState, type CSSProperties, type ReactNode } from "react";
 
@@ -277,7 +278,8 @@ export default function HomeClient() {
     console.log("%chey, fellow dev 👋", "font-size:14px;font-weight:600;");
     console.log(
       "Try dragging the clock in the top-right corner — you can scrub through the day.\n" +
-        "And if you still remember the Konami code… it works here. (↑ ↑ ↓ ↓ ← → ← → B A)",
+        "And if you still remember the Konami code… it works here. (↑ ↑ ↓ ↓ ← → ← → B A)\n" +
+        "There's also a guitar tuner hiding next to the clock. Bring an instrument.",
     );
   }, []);
 
@@ -289,7 +291,10 @@ export default function HomeClient() {
           style={stagger(0)}
         >
           <h1 className="text-2xl font-bold text-foreground">Pedro Barretto</h1>
-          <ClockTheme />
+          <div className="flex items-center gap-3">
+            <MusicNoteEasterEgg />
+            <ClockTheme />
+          </div>
         </header>
 
         <p

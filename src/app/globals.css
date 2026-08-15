@@ -80,6 +80,7 @@
   --sidebar-accent-foreground: #171717;
   --sidebar-border: #d4d4d4;
   --sidebar-ring: #a3a3a3;
+  --tune-ok: #16a34a;
 }
 
 .dark {
@@ -114,6 +115,7 @@
   --sidebar-accent-foreground: #f5f5f5;
   --sidebar-border: #404040;
   --sidebar-ring: #a3a3a3;
+  --tune-ok: #4ade80;
 }
 
 @layer base {
@@ -198,6 +200,16 @@
   .animate-enter {
     animation: enter-fade-up 600ms cubic-bezier(0.23, 1, 0.32, 1) both;
     animation-delay: calc(var(--stagger, 0) * 70ms);
+  }
+
+  /* Leaving the home page for the tuner: wash out to the plain background so
+     the tuner's intro can fade in from the same colour. */
+  .animate-egg-cover {
+    animation: egg-cover 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .animate-egg-note {
+    animation: egg-note 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
   .link-underline {
@@ -306,6 +318,26 @@
 @keyframes enter-fade {
   from {
     opacity: 0;
+  }
+}
+
+@keyframes egg-cover {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes egg-note {
+  from {
+    opacity: 0;
+    transform: scale(0.6) rotate(-14deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
   }
 }
 
