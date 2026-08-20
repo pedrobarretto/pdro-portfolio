@@ -1,3 +1,4 @@
+import { audioContextConstructor } from "@/lib/audio-context";
 import { createPitchDetector, rootMeanSquare } from "@/lib/pitch";
 
 /**
@@ -45,12 +46,6 @@ const decimationFor = (sampleRate: number): number => {
   let factor = 1;
   while (factor < 8 && sampleRate / (factor * 2) >= TARGET_RATE) factor *= 2;
   return factor;
-};
-
-const audioContextConstructor = (): typeof AudioContext | undefined => {
-  if (typeof window === "undefined") return undefined;
-  const legacy = window as typeof window & { webkitAudioContext?: typeof AudioContext };
-  return window.AudioContext ?? legacy.webkitAudioContext;
 };
 
 export function createTunerEngine(onSample: (sample: TunerSample) => void): TunerEngine {

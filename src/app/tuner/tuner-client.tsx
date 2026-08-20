@@ -9,6 +9,7 @@ import {
   useState,
   type CSSProperties,
 } from "react";
+import { Metronome } from "@/components/metronome";
 import { haptic } from "@/lib/haptics";
 import {
   createTunerEngine,
@@ -20,6 +21,7 @@ import {
   displayName,
   nearestNote,
   noteFromId,
+  noteFromMidi,
   TUNINGS,
   type Note,
   type TuningId,
@@ -215,6 +217,17 @@ export function TunerClient({ showIntro }: { showIntro: boolean }) {
     window.history.replaceState(null, "", "/tuner");
   }, []);
 
+  // The semitones either side, laid out the way the meter reads: flat on the
+  // left, sharp on the right. Handy when a string is so far off that the tuner
+  // has locked onto the wrong name entirely.
+  const neighbours = useMemo(
+    () =>
+      note
+        ? { flat: noteFromMidi(note.midi - 1), sharp: noteFromMidi(note.midi + 1) }
+        : null,
+    [note],
+  );
+
   const activeIndex = note ? strings.findIndex((string) => string.midi === note.midi) : -1;
   const inTune = note !== null && Math.abs(cents) <= IN_TUNE_CENTS;
 
@@ -298,16 +311,36 @@ export function TunerClient({ showIntro }: { showIntro: boolean }) {
           <div className="mt-6 text-center">
             <div
               className={cn(
-                "flex items-baseline justify-center gap-1 transition-opacity duration-300",
+                "grid grid-cols-[1fr_auto_1fr] items-baseline gap-2 transition-opacity duration-300",
                 note ? "opacity-100" : "opacity-30",
               )}
             >
-              <span className="text-6xl font-semibold tabular-nums text-foreground">
-                {note ? displayName(note.name) : "—"}
+              <span
+                className={cn(
+                  "justify-self-end text-xl tabular-nums text-muted-foreground/50 transition-opacity duration-300",
+                  neighbours ? "opacity-100" : "opacity-0",
+                )}
+              >
+                {neighbours && `${displayName(neighbours.flat.name)}${neighbours.flat.octave}`}
               </span>
-              {/* Fixed width so the note glyph doesn't shift when the octave appears. */}
-              <span className="w-4 text-left text-xl text-muted-foreground tabular-nums">
-                {note ? note.octave : ""}
+
+              <span className="flex items-baseline gap-1">
+                <span className="text-6xl font-semibold tabular-nums text-foreground">
+                  {note ? displayName(note.name) : "—"}
+                </span>
+                {/* Fixed width so the note glyph doesn't shift when the octave appears. */}
+                <span className="w-4 text-left text-xl text-muted-foreground tabular-nums">
+                  {note ? note.octave : ""}
+                </span>
+              </span>
+
+              <span
+                className={cn(
+                  "justify-self-start text-xl tabular-nums text-muted-foreground/50 transition-opacity duration-300",
+                  neighbours ? "opacity-100" : "opacity-0",
+                )}
+              >
+                {neighbours && `${displayName(neighbours.sharp.name)}${neighbours.sharp.octave}`}
               </span>
             </div>
 
@@ -393,6 +426,10 @@ export function TunerClient({ showIntro }: { showIntro: boolean }) {
             <p className="mt-6 text-sm text-muted-foreground">All six. Go play something.</p>
           )}
         </section>
+
+        <div className="mt-8 animate-enter" style={stagger(3)}>
+          <Metronome />
+        </div>
       </main>
     </div>
   );
