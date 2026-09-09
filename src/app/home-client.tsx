@@ -3,7 +3,13 @@
 import { ClockTheme } from "@/components/clock-theme";
 import { MusicNoteEasterEgg } from "@/components/music-note-easter-egg";
 import Image from "next/image";
-import { useEffect, useId, useState, type CSSProperties, type ReactNode } from "react";
+import {
+  useEffect,
+  useId,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 
 type Project = {
   name: string;
@@ -85,6 +91,41 @@ const projects: Project[] = [
     icon: "/icons/codex-account-hub.png",
   },
 ];
+
+/**
+ * Inline link with the destination's favicon on its left — grayscale until
+ * hovered, matching the project list. Kept on one line so the icon never
+ * wraps away from the label.
+ */
+function InlineLink({
+  href,
+  icon,
+  children,
+}: {
+  href: string;
+  icon: string;
+  children: ReactNode;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group whitespace-nowrap text-foreground"
+    >
+      <Image
+        src={icon}
+        alt=""
+        width={16}
+        height={16}
+        className="mr-1.5 inline-block size-4 rounded-[4px] align-[-0.2em] sm:grayscale sm:opacity-80 transition-[filter,opacity] duration-300 sm:group-hover:grayscale-0 sm:group-hover:opacity-100"
+      />
+      <span className="underline decoration-muted-foreground/60 underline-offset-4 transition-colors group-hover:decoration-foreground">
+        {children}
+      </span>
+    </a>
+  );
+}
 
 function SectionHeader({
   title,
@@ -309,8 +350,8 @@ export default function HomeClient() {
             className="text-foreground underline decoration-muted-foreground/60 underline-offset-4 transition-colors hover:decoration-foreground"
           >
             Ingenious Agency
-          </a>{" "}
-          and doing AI consulting for{" "}
+          </a>
+          , doing AI consulting for{" "}
           <a
             href="https://www.poscontrole.com.br/"
             target="_blank"
@@ -318,7 +359,11 @@ export default function HomeClient() {
             className="text-foreground underline decoration-muted-foreground/60 underline-offset-4 transition-colors hover:decoration-foreground"
           >
             POS Controle
-          </a>
+          </a>{" "}
+          and founder of{" "}
+          <InlineLink href="https://wavyia.com.br/" icon="/icons/wavy.png">
+            Wavy
+          </InlineLink>
           . Nights and weekends, I ship my own things: AI attendants on
           WhatsApp, a calm habit tracker, small tools that scratch my own itch.
         </p>
